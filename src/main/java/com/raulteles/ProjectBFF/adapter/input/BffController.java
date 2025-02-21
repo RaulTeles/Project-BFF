@@ -2,12 +2,10 @@ package com.raulteles.ProjectBFF.adapter.input;
 
 import com.raulteles.ProjectBFF.application.dto.CustomerDTO;
 import com.raulteles.ProjectBFF.application.port.input.BffInputPort;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.raulteles.ProjectBFF.exception.ApiException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/bff")
@@ -23,20 +21,17 @@ public class BffController {
     @GetMapping("/cliente/{id}")
     public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
         CustomerDTO customer = bffInputPort.getCustomerById(id);
-        if (customer != null) {
-            return ResponseEntity.ok(customer);
-        } else {
-            return ResponseEntity.status(404).body(null);
-        }
+        return ResponseEntity.ok(customer);
     }
 
     @GetMapping("/cliente/name/{customerName}")
     public ResponseEntity<CustomerDTO> getCustomerByName(@PathVariable String customerName) {
         CustomerDTO customer = bffInputPort.getCustomerByName(customerName);
-        if (customer != null) {
-            return ResponseEntity.ok(customer);
-        } else {
-            return ResponseEntity.status(404).body(null);
-        }
+        return ResponseEntity.ok(customer);
+    }
+
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<String> handleApiException(ApiException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }
