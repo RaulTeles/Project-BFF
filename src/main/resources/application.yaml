@@ -1,11 +1,12 @@
 server:
   port: 8081
 
+---
 spring:
-  application:
-    name: ProjectBff
-
+  config:
+    activate:
+      on-profile: dev
 logging:
   level:
     root: INFO
-    com.exemplo.bff: DEBUG
+    com.raulteles.ProjectBFF: DEBUG

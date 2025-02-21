@@ -1,0 +1,8 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+logging:
+  level:
+    root: WARN
+    com.raulteles.ProjectBFF: INFO
