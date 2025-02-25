@@ -34,4 +34,12 @@ public class BffService implements BffInputPort {
         }
     }
 
+    public CustomerDTO getCustomerByDocumentNumber(String documentNumber){
+        try {
+            return customerApi.getCustomerByDocumentNumber(documentNumber);
+        } catch (FeignException.NotFound e){
+            throw new ApiException("Documento {" + documentNumber + "} não encontrado, verifique o número informado");
+        }
+    }
+
 }

@@ -6,5 +6,6 @@ public interface BffInputPort {
 
     CustomerDTO getCustomerById(Long id);
     CustomerDTO getCustomerByName(String name);
+    CustomerDTO getCustomerByDocumentNumber(String documentNumber);
 
 }

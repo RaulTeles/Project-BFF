@@ -87,4 +87,33 @@ class BffServiceTest {
 
         verify(customerApi, times(1)).getCustomerByName(name);
     }
+
+    @Test
+    void testGetCustomerByDocumentNumber_Success() {
+        String documentNumber = "12345678901";
+        CustomerDTO mockCustomer = new CustomerDTO(1L, "Raul", "Dev", List.of(), List.of());
+
+        when(customerApi.getCustomerByDocumentNumber(documentNumber)).thenReturn(mockCustomer);
+
+        CustomerDTO result = bffService.getCustomerByDocumentNumber(documentNumber);
+
+        assertNotNull(result);
+        assertEquals(mockCustomer, result);
+
+        verify(customerApi, times(1)).getCustomerByDocumentNumber(documentNumber);
+    }
+
+    @Test
+    void testGetCustomerByDocumentNumber_NotFound() {
+        String documentNumber = "00000000000";
+
+        when(customerApi.getCustomerByDocumentNumber(documentNumber)).thenThrow(FeignException.NotFound.class);
+
+        ApiException exception = assertThrows(ApiException.class, () -> {
+            bffService.getCustomerByDocumentNumber(documentNumber);
+        });
+        assertEquals("Documento {00000000000} não encontrado, verifique o número informado", exception.getMessage());
+
+        verify(customerApi, times(1)).getCustomerByDocumentNumber(documentNumber);
+    }
 }

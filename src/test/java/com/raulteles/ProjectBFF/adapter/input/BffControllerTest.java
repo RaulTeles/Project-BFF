@@ -27,14 +27,14 @@ public class BffControllerTest {
 
     @Test
     public void testGetCustomerById_Success() throws Exception {
-        CustomerDTO customer = new CustomerDTO(1L, "João", "Segmento A", List.of(), List.of());
+        CustomerDTO customer = new CustomerDTO(1L, "Raul", "Dev", List.of(), List.of());
 
         Mockito.when(bffInputPort.getCustomerById(1L)).thenReturn(customer);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/bff/cliente/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("João"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Raul"));
     }
 
     @Test
@@ -48,14 +48,14 @@ public class BffControllerTest {
 
     @Test
     public void testGetCustomerByName_Success() throws Exception {
-        CustomerDTO customer = new CustomerDTO(1L, "João", "Segmento A", List.of(), List.of());
+        CustomerDTO customer = new CustomerDTO(1L, "Raul", "Dev", List.of(), List.of());
 
-        Mockito.when(bffInputPort.getCustomerByName("João")).thenReturn(customer);
+        Mockito.when(bffInputPort.getCustomerByName("Raul")).thenReturn(customer);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/bff/cliente/name/João"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/bff/cliente/name/Raul"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("João"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Raul"));
     }
 
     @Test
@@ -67,4 +67,27 @@ public class BffControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Cliente não encontrado"));
     }
+
+    @Test
+    public void testGetCustomerByDocumentNumber_Success() throws Exception {
+        CustomerDTO customer = new CustomerDTO(1L, "Raul", "Dev", List.of(), List.of());
+
+        Mockito.when(bffInputPort.getCustomerByDocumentNumber("12345678901")).thenReturn(customer);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/bff/cliente/documentNumber?number=12345678901"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Raul"));
+    }
+
+    @Test
+    public void testGetCustomerByDocumentNumber_NotFound() throws Exception {
+        Mockito.when(bffInputPort.getCustomerByDocumentNumber("00000000000")).thenThrow(new ApiException("Documento não encontrado"));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/bff/cliente/documentNumber?number=00000000000"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().string("Documento não encontrado"));
+    }
+
+
 }

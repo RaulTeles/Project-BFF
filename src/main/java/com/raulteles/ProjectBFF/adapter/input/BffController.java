@@ -19,15 +19,21 @@ public class BffController {
     }
 
     @GetMapping("/cliente/{id}")
-    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id) {
+    public CustomerDTO getCustomerById(@PathVariable Long id) {
         CustomerDTO customer = bffInputPort.getCustomerById(id);
-        return ResponseEntity.ok(customer);
+        return customer;
     }
 
     @GetMapping("/cliente/name/{customerName}")
-    public ResponseEntity<CustomerDTO> getCustomerByName(@PathVariable String customerName) {
+    public CustomerDTO getCustomerByName(@PathVariable String customerName) {
         CustomerDTO customer = bffInputPort.getCustomerByName(customerName);
-        return ResponseEntity.ok(customer);
+        return customer;
+    }
+
+    @GetMapping("/cliente/documentNumber")
+    public CustomerDTO getCustomerByDocumentNumber(@RequestParam String number){
+        CustomerDTO document = bffInputPort.getCustomerByDocumentNumber(number);
+        return document;
     }
 
     @ExceptionHandler(ApiException.class)
