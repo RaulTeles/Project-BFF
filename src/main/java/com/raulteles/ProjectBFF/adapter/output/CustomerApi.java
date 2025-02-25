@@ -1,10 +1,10 @@
 package com.raulteles.ProjectBFF.adapter.output;
 
+import com.raulteles.ProjectBFF.application.dto.CreateCustomerDTO;
 import com.raulteles.ProjectBFF.application.dto.CustomerDTO;
+import org.apache.catalina.startup.CertificateCreateRule;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "customer-api", url = "http://localhost:8080")
 public interface CustomerApi {
@@ -18,4 +18,6 @@ public interface CustomerApi {
     @GetMapping("/cliente/documentNumber")
     CustomerDTO getCustomerByDocumentNumber(@RequestParam String number);
 
+    @PostMapping("/cliente")
+    CustomerDTO createCustomer(@RequestBody CreateCustomerDTO createCustomerDTO);
 }

@@ -1,6 +1,7 @@
 package com.raulteles.ProjectBFF.application.service;
 
 import com.raulteles.ProjectBFF.adapter.output.CustomerApi;
+import com.raulteles.ProjectBFF.application.dto.CreateCustomerDTO;
 import com.raulteles.ProjectBFF.application.dto.CustomerDTO;
 import com.raulteles.ProjectBFF.application.port.input.BffInputPort;
 import com.raulteles.ProjectBFF.exception.ApiException;
@@ -40,6 +41,10 @@ public class BffService implements BffInputPort {
         } catch (FeignException.NotFound e){
             throw new ApiException("Documento {" + documentNumber + "} não encontrado, verifique o número informado");
         }
+    }
+
+    public CustomerDTO createCustomer(CreateCustomerDTO createCustomerDTO) {
+        return customerApi.createCustomer(createCustomerDTO);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.raulteles.ProjectBFF.adapter.input;
 
+import com.raulteles.ProjectBFF.application.dto.CreateCustomerDTO;
 import com.raulteles.ProjectBFF.application.dto.CustomerDTO;
 import com.raulteles.ProjectBFF.application.port.input.BffInputPort;
 import com.raulteles.ProjectBFF.exception.ApiException;
@@ -35,6 +36,12 @@ public class BffController {
         CustomerDTO document = bffInputPort.getCustomerByDocumentNumber(number);
         return document;
     }
+
+    @PostMapping("/cliente")
+     public CustomerDTO createCustomer(@RequestBody CreateCustomerDTO createCustomerDTO) {
+        CustomerDTO save =bffInputPort.createCustomer(createCustomerDTO);
+        return save;
+     }
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<String> handleApiException(ApiException e) {
