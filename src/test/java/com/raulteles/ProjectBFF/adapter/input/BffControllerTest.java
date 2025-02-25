@@ -1,12 +1,16 @@
 package com.raulteles.ProjectBFF.adapter.input;
 
+import com.raulteles.ProjectBFF.application.dto.CreateCustomerDTO;
+import com.raulteles.ProjectBFF.application.dto.CustomerContactDTO;
 import com.raulteles.ProjectBFF.application.dto.CustomerDTO;
+import com.raulteles.ProjectBFF.application.dto.CustomerDocumentDTO;
 import com.raulteles.ProjectBFF.application.port.input.BffInputPort;
 import com.raulteles.ProjectBFF.exception.ApiException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -89,5 +93,53 @@ public class BffControllerTest {
                 .andExpect(MockMvcResultMatchers.content().string("Documento não encontrado"));
     }
 
+    @Test
+    void testCreateCustomer_Success() throws Exception {
+        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO(
+                "João Silva",
+                1L,
+                List.of(new CustomerDocumentDTO("12345678901", "CPF")),
+                List.of(new CustomerContactDTO("joao.silva@example.com", "e-mail"))
+        );
+
+        CustomerDTO expectedCustomerDTO = new CustomerDTO(
+                1L,
+                "João Silva",
+                "Classic",
+                List.of(new CustomerDocumentDTO("12345678901", "CPF")),
+                List.of(new CustomerContactDTO("joao.silva@example.com", "e-mail"))
+        );
+
+        Mockito.when(bffInputPort.createCustomer(createCustomerDTO)).thenReturn(expectedCustomerDTO);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/bff/cliente")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "João Silva",
+                                  "segmentId": 1,
+                                  "documents": [
+                                    {
+                                      "documentNumber": "12345678901",
+                                      "documentType": "CPF"
+                                    }
+                                  ],
+                                  "contacts": [
+                                    {
+                                      "contactCustomer": "joao.silva@example.com",
+                                      "contactType": "e-mail"
+                                    }
+                                  ]
+                                }
+                                """))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("João Silva"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.segmentName").value("Classic"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.documents[0].documentNumber").value("12345678901"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.documents[0].documentType").value("CPF"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contacts[0].contactCustomer").value("joao.silva@example.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contacts[0].contactType").value("e-mail"));
+    }
 
 }

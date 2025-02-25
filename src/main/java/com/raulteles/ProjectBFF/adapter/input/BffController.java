@@ -38,6 +38,7 @@ public class BffController {
     }
 
     @PostMapping("/cliente")
+    @ResponseStatus(HttpStatus.CREATED)
      public CustomerDTO createCustomer(@RequestBody CreateCustomerDTO createCustomerDTO) {
         CustomerDTO save =bffInputPort.createCustomer(createCustomerDTO);
         return save;

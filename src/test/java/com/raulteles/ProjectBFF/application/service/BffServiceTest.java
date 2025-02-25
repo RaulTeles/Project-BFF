@@ -1,7 +1,10 @@
 package com.raulteles.ProjectBFF.application.service;
 
 import com.raulteles.ProjectBFF.adapter.output.CustomerApi;
+import com.raulteles.ProjectBFF.application.dto.CreateCustomerDTO;
+import com.raulteles.ProjectBFF.application.dto.CustomerContactDTO;
 import com.raulteles.ProjectBFF.application.dto.CustomerDTO;
+import com.raulteles.ProjectBFF.application.dto.CustomerDocumentDTO;
 import com.raulteles.ProjectBFF.exception.ApiException;
 import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
@@ -115,5 +118,32 @@ class BffServiceTest {
         assertEquals("Documento {00000000000} não encontrado, verifique o número informado", exception.getMessage());
 
         verify(customerApi, times(1)).getCustomerByDocumentNumber(documentNumber);
+    }
+
+    @Test
+    void testCreateCustomer_Success() {
+        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO(
+                "João Silva",
+                1L,
+                List.of(new CustomerDocumentDTO("12345678901", "CPF")),
+                List.of(new CustomerContactDTO("joao.silva@example.com", "e-mail"))
+        );
+
+        CustomerDTO expectedCustomerDTO = new CustomerDTO(
+                1L,
+                "João Silva",
+                "Classic",
+                List.of(new CustomerDocumentDTO("12345678901", "CPF")),
+                List.of(new CustomerContactDTO("joao.silva@example.com", "e-mail"))
+        );
+
+        when(customerApi.createCustomer(createCustomerDTO)).thenReturn(expectedCustomerDTO);
+
+        CustomerDTO result = bffService.createCustomer(createCustomerDTO);
+
+        assertNotNull(result);
+        assertEquals(expectedCustomerDTO, result);
+
+        verify(customerApi, times(1)).createCustomer(createCustomerDTO);
     }
 }
