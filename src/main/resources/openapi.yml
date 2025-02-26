@@ -1,0 +1,160 @@
+openapi: 3.0.0
+info:
+  title: BFF API
+  version: 1.0.0
+  description: API do BFF para gerenciamento de clientes
+servers:
+  - url: http://localhost:8081
+    description: Servidor local
+paths:
+  /cliente/{id}:
+    get:
+      summary: Busca cliente por ID
+      description: Endpoint para buscar um cliente pelo seu ID.
+      operationId: getCustomerById
+      parameters:
+        - name: id
+          in: path
+          description: ID do cliente
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Cliente encontrado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDTO'
+        '404':
+          description: Cliente não encontrado
+        '500':
+          description: Erro interno do servidor
+  /cliente/name/{customerName}:
+    get:
+      summary: Busca cliente por nome
+      description: Endpoint para buscar um cliente pelo seu nome.
+      operationId: getCustomerByName
+      parameters:
+        - name: customerName
+          in: path
+          description: Nome do cliente
+          required: true
+          schema:
+            type: string
+            example: João Silva
+      responses:
+        '200':
+          description: Cliente encontrado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDTO'
+        '404':
+          description: Cliente não encontrado
+        '500':
+          description: Erro interno do servidor
+  /cliente/documentNumber:
+    get:
+      summary: Busca cliente por número de documento
+      description: Endpoint para buscar um cliente pelo número do documento (CPF).
+      operationId: getCustomerByDocumentNumber
+      parameters:
+        - name: number
+          in: query
+          description: Número do documento (CPF)
+          required: true
+          schema:
+            type: string
+            example: "12345678901"
+      responses:
+        '200':
+          description: Cliente encontrado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDTO'
+        '404':
+          description: Cliente não encontrado
+        '500':
+          description: Erro interno do servidor
+  /cliente:
+    post:
+      summary: Cria um novo cliente
+      description: Endpoint para criar um novo cliente.
+      operationId: createCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomerDTO'
+      responses:
+        '201':
+          description: Cliente criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDTO'
+        '409':
+          description: CPF já existe
+        '500':
+          description: Erro interno do servidor
+components:
+  schemas:
+    CustomerDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: João Silva
+        segmentName:
+          type: string
+          example: Classic
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerDocumentDTO'
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerContactDTO'
+    CreateCustomerDTO:
+      type: object
+      properties:
+        name:
+          type: string
+          example: João Silva
+        segmentId:
+          type: integer
+          example: 1
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerDocumentDTO'
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerContactDTO'
+    CustomerDocumentDTO:
+      type: object
+      properties:
+        documentNumber:
+          type: string
+          example: "12345678901"
+        documentType:
+          type: string
+          example: CPF
+    CustomerContactDTO:
+      type: object
+      properties:
+        contactCustomer:
+          type: string
+          example: joao.silva@example.com
+        contactType:
+          type: string
+          example: e-mail

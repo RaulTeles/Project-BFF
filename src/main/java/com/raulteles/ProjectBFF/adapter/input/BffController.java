@@ -5,16 +5,17 @@ import com.raulteles.ProjectBFF.application.dto.CustomerDTO;
 import com.raulteles.ProjectBFF.application.port.input.BffInputPort;
 import com.raulteles.ProjectBFF.exception.ApiException;
 import com.raulteles.ProjectBFF.exception.CpfAlreadyExistsException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/bff")
+@Tag(name = "Customer", description = "API para gerenciamento de clientes")
 public class BffController {
 
     private final BffInputPort bffInputPort;
-
 
     public BffController(BffInputPort bffInputPort) {
         this.bffInputPort = bffInputPort;
