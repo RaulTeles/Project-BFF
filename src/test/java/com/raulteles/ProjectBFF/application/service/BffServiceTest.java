@@ -6,12 +6,14 @@ import com.raulteles.ProjectBFF.application.dto.CustomerContactDTO;
 import com.raulteles.ProjectBFF.application.dto.CustomerDTO;
 import com.raulteles.ProjectBFF.application.dto.CustomerDocumentDTO;
 import com.raulteles.ProjectBFF.exception.ApiException;
+import com.raulteles.ProjectBFF.exception.CpfAlreadyExistsException;
 import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -143,6 +145,28 @@ class BffServiceTest {
 
         assertNotNull(result);
         assertEquals(expectedCustomerDTO, result);
+
+        verify(customerApi, times(1)).createCustomer(createCustomerDTO);
+    }
+
+    @Test
+    void testCreateCustomer_CpfAlreadyExists() {
+        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO(
+                "João Silva",
+                1L,
+                List.of(new CustomerDocumentDTO("12345678901", "CPF")),
+                List.of(new CustomerContactDTO("joao.silva@example.com", "e-mail"))
+        );
+
+        when(customerApi.createCustomer(createCustomerDTO))
+                .thenThrow(new CpfAlreadyExistsException(HttpStatus.CONFLICT, "CPF já existe"));
+
+        CpfAlreadyExistsException exception = assertThrows(CpfAlreadyExistsException.class, () -> {
+            bffService.createCustomer(createCustomerDTO);
+        });
+
+        assertEquals("CPF já existe", exception.getMessage());
+        assertEquals(HttpStatus.CONFLICT, exception.getStatus());
 
         verify(customerApi, times(1)).createCustomer(createCustomerDTO);
     }

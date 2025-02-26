@@ -5,8 +5,10 @@ import com.raulteles.ProjectBFF.application.dto.CreateCustomerDTO;
 import com.raulteles.ProjectBFF.application.dto.CustomerDTO;
 import com.raulteles.ProjectBFF.application.port.input.BffInputPort;
 import com.raulteles.ProjectBFF.exception.ApiException;
+import com.raulteles.ProjectBFF.exception.CpfAlreadyExistsException;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,7 +46,10 @@ public class BffService implements BffInputPort {
     }
 
     public CustomerDTO createCustomer(CreateCustomerDTO createCustomerDTO) {
-        return customerApi.createCustomer(createCustomerDTO);
+        try {
+            return customerApi.createCustomer(createCustomerDTO);
+        } catch (CpfAlreadyExistsException e) {
+            throw new CpfAlreadyExistsException(HttpStatus.CONFLICT, e.getMessage());
+        }
     }
-
 }

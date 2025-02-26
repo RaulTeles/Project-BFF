@@ -6,10 +6,12 @@ import com.raulteles.ProjectBFF.application.dto.CustomerDTO;
 import com.raulteles.ProjectBFF.application.dto.CustomerDocumentDTO;
 import com.raulteles.ProjectBFF.application.port.input.BffInputPort;
 import com.raulteles.ProjectBFF.exception.ApiException;
+import com.raulteles.ProjectBFF.exception.CpfAlreadyExistsException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -142,4 +144,39 @@ public class BffControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contacts[0].contactType").value("e-mail"));
     }
 
+    @Test
+    void testCreateCustomer_CpfAlreadyExists() throws Exception {
+        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO(
+                "João Silva",
+                1L,
+                List.of(new CustomerDocumentDTO("12345678901", "CPF")),
+                List.of(new CustomerContactDTO("joao.silva@example.com", "e-mail"))
+        );
+
+        Mockito.when(bffInputPort.createCustomer(createCustomerDTO))
+                .thenThrow(new CpfAlreadyExistsException(HttpStatus.CONFLICT, "CPF já existe"));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/bff/cliente")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "João Silva",
+                                  "segmentId": 1,
+                                  "documents": [
+                                    {
+                                      "documentNumber": "12345678901",
+                                      "documentType": "CPF"
+                                    }
+                                  ],
+                                  "contacts": [
+                                    {
+                                      "contactCustomer": "joao.silva@example.com",
+                                      "contactType": "e-mail"
+                                    }
+                                  ]
+                                }
+                                """))
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andExpect(MockMvcResultMatchers.content().string("CPF já existe"));
+    }
 }

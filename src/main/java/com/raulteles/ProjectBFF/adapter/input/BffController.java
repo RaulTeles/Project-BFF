@@ -4,6 +4,7 @@ import com.raulteles.ProjectBFF.application.dto.CreateCustomerDTO;
 import com.raulteles.ProjectBFF.application.dto.CustomerDTO;
 import com.raulteles.ProjectBFF.application.port.input.BffInputPort;
 import com.raulteles.ProjectBFF.exception.ApiException;
+import com.raulteles.ProjectBFF.exception.CpfAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,5 +48,10 @@ public class BffController {
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<String> handleApiException(ApiException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(CpfAlreadyExistsException.class)
+    public ResponseEntity<String> handleApiException(CpfAlreadyExistsException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
     }
 }
